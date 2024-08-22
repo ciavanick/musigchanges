@@ -1,0 +1,214 @@
+########## VERBOSITY ##########
+
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+
+####visualize reference axis######
+
+/vis/scene/add/axes 0 0 0 10 cm
+
+
+########## PHYSICS ##########
+
+/physics/addPhysics emlowenergy
+
+
+########## GEOMETRY #######
+
+#### World length - default: 500, 500, 500, name: World
+/setup/worldsize 500 500 2500 mm
+
+#### Other objects 
+## Extra materials defined:	Vacuum;  Beamvacuum; Galactic; 
+## LiqHe; GasHe; Copper; CNTforest; Mylar; Plastic; Titanium;
+## Aluminium; Antico; Scintillator; Berillium; Lithium; Silicon; 
+## FusedSilica; Aerogel; CsI; Lucite; BGO; Concrete; Water;
+
+# far beam counter position
+#/setup/box beamcounter Scintillator 20.0 20.0 0.055 mm  0. 0. -160 mm 0 0 0 World A
+#/setup/tubs collimator1 Copper 5.0 30.0 10. mm  0. 0. -170 mm  0 0 0 World A
+
+############## CLOSE BEAM COUNTER ##################
+
+ /setup/box beamcounter Scintillator 24.99 11.99 0.025 mm  -41.44310823 0. 0. mm 0 90 0 World A
+
+############## MYLAR FOILS ##################
+ 
+ /setup/tubs outershield G4_MYLAR  96.988 96.99 123.0 mm  0. 0. 0. mm 0 0 0 World A
+ /setup/tubs middleshield G4_MYLAR 74.988 74.99 123.0 mm  0. 0. 0. mm 0 0 0 World A
+ /setup/tubs innershield4 G4_MYLAR  54.498 54.5 123.0 mm  0. 0. 0. mm 0 0 0 World A
+
+
+############## TITANIUM FOIL ##################
+
+ /setup/box ti_foil Titanium  0.006 20. 40. mm  -34.77378594 0. 0. mm 0 0 0 World A
+
+### boolean geometry: mother: B, daughter: add, sub, inter
+
+############## COLLIMATOR ##################
+ 
+ ##/setup/tubs collimator Copper 0.1  40.  5. mm  -241.3324125 0.  0.  mm  0 90 0 World B
+ ##/setup/box c2sub1       Copper 25.   12.  5.1  mm  0. 0. 0. mm  0 0 0 collimator sub
+
+
+############## COPPER CHAMBER  AND HELIUM ##################
+ 
+ 
+ /setup/box chamberBox  Copper 5.5 32. 62. mm -37.5278225 0. 0. mm 0 0 0 World B
+ /setup/box chamberSub  Copper 5.6 8. 8. mm 0. 0. 0. mm 0 0 0 chamberBox sub
+ #/setup/tubs window Copper 0. 1.5 5.1 mm 0. 0. 0. mm 0 90 0 chamberBox sub
+
+ #normal target
+ #/setup/box SfHeTarget LiqHe 64.00 32.00 1.0 mm 0.5 0. 0. mm 0 90 0 World A
+ #Lower target
+ # /setup/box SfHeTarget LiqHe 54.999 28.999 2.499 mm 8.63 0. -4.995 mm 0 0 0 World A
+ #Higher target
+ #/setup/box SfHeTarget LiqHe 54.999 28.999 2.499 mm -8.6843 0. 5.01 mm 0 0 0 World A
+
+############## GRID TARGET HELIUM AND SILICON ##############
+/setup/sisfe SfHeTarget 1000 0.04 28.999 0.07 mm 0.01 28.999 0.07 mm 0.035 0. 0. mm 0 90 0 World
+
+############## STOPPING DETECTOR ###########################
+/setup/box StoppingBox  Copper 10. 31. 62. mm 20 0. 0 mm 0 0 0 World A
+
+############## TARGETS random  ##################
+  
+ #/setup/box targetgas   G4_Galactic         12. 35. 19. mm  0. 0. 12.5 mm 0 0 0 World A
+ #/setup/box target      Aerogel       10. 25. 7.  mm  0. 0. 6.   mm 0 0 0 targetgas A
+ #/setup/box veto        Scintillator  40.0 40.0 4 mm  0. 0. 45   mm 0 0 0 World A
+
+
+/setup/detector beamcounter
+## /setup/detector veto
+
+#### Replica volumes with names wire1, wire2,...
+## syntax: first make tubs or box object with obj_name, then /setup/replica ‘obj_name’ ‘nr_of_replica’ ‘type: lin or rot‘ 'spacing vector' 
+# /setup/tubs wire Titanium 0. 0.025 500. mm  -240. 0. 0. mm 90 0 0 det A
+# /setup/replica wire 49 lin 10. 0. 0. mm
+
+#### Set step limit
+#/setup/steplimit target 0.01
+#/setup/steplimit targetgas 0.01
+/setup/steplimit ti_foil 0.001
+#/setup/steplimit outershield 0.001
+#/setup/steplimit middleshield 0.001
+#/setup/steplimit innershield 0.001
+
+/setup/stepMax 0.001 mm
+
+#### Set visualization: red, green, blue, yellow, magenta, invisible
+/setup/color chamber blue
+/setup/color beamcounter yellow
+/setup/color SfHeTarget green
+/setup/color collimator green
+/setup/color ti_foil red
+# /setup/color collimator2 red
+#/setup/color target magenta
+#/setup/color outershield magenta
+#/setup/color middleshield magenta
+#/setup/color innershield magenta
+/setup/color/sisfe invisible green blue
+
+############ PARTICLE GUN - real source #############
+/gun/particle mu+
+/gun/momentum 11 MeV
+
+# sigma = 3%  ==> sigma 12 MeV *0.03 = 0.36
+# sigma = FWHM / 2.355 
+# 0.36 / 2.355 = 0.152866242
+/gun/momentumsigma 0.1401273885 MeV
+ 
+/gun/vertex -265.5829572 0. 0. mm
+
+#if use tilt instead of direction then set the following sigmas
+#/gun/vertexsigma 4.5 8 7.794228634 mm
+
+
+/gun/vertexsigma 8 9 0 mm
+
+
+# larger than relative r around source rejected (source collimation)
+#/gun/vertexrelativer 100 mm
+
+#### Syntax: /gun/tilt xangle, yangle, dummy
+#/gun/tilt 60  0  0 deg
+/gun/direction 1. 0. 0.
+
+#### Syntax: /gun/tiltsigma xangleSigma, yangleSigma, dummy  (1 degree on 1 meter ~ 17mm) 
+#/gun/tiltsigma 0.15 0.15 0 deg
+
+# pitch is the focus tilt angle
+# close focus
+#/gun/pitch 0.076 deg
+# far focus
+#/gun/pitch 0.06 deg
+#/gun/muonPolarizVector 0 0 -1
+
+/gun/mom/shape gaussian
+/gun/pos/shape gaussian
+
+############ INITIALIZE and START #############
+###Name of output file is "musig_out" by default otherwise to be specified after /run/outputFilename#######
+/run/initialize
+
+/control/execute mac/musigVis.mac
+/run/outputFilename muStop2023FarGridMylar11MeV
+
+/run/beamOn 1000000
+
+
+########### HELP
+#
+#
+#### Box objects 
+# parameter order: [name] [material] [size x] [size y] [size z] [unit of size] [pos x] [pos y] [pos z] [unit of position] [rotation angle around X] [around Y] [around Z] [mother vol] [boolean? A = alone; B = boolean mother; add, sub, inter = boolean operations with mother ]
+#
+#
+#### Tube objects
+# parameter order: [name] [material] [inner r] [outer r] [full length] [unit of size] [pos x] [pos y] [pos z] [unit of position] [rotation angle around X] [rot Y] [rot Z]
+#
+#### Superfluid Helium - Silicon grid object (/setup/sisfe)
+# parameter order: [name] [number of LiqHe columns] [LiqHe column size x] [LiqHe column size y] [LiqHe column size z] [unit of size] [Si column size x] [Si column size y] [Si column size z] [unit of size] [pos x] [pos y] [pos z] [unit of position] [rotation angle around X] [around Y] [around Z] [mother vol]
+#
+## Colours (/setup/color/sisfe)
+# parameter order: [container colour] [LiqHe colour] [Si colour]
+#
+#  Modular physics lists to choose from 
+#  - "local"	standard EM physics with current 'best' options setting.
+#                 these options are explicited in PhysListEmStandard		
+#  - "standardSS" standard EM physics with single Coulomb scattering 
+#                 instead of multiple scattering; 
+#  - "standardNR" standard EM physics with single Coulomb scattering 
+#                 process G4ScreenedNuclearRecoil instead of the 
+#                 multiple scattering for ions with energy less than 
+#                 100 MeV/nucleon; the new process was developed 
+#                 by M.H. Mendenhall and R.A. Weller from Vanderbuilt 
+#                 University and published in NIM B 277 (2005) 420.
+#                 In later Geant4 releases the process will be a part
+#                 of Geant4 source, currently it is released together
+#                 with its mathematical tool c2_functions in current 
+#     
+#  From geant4/source/physics_lists/builders:	 
+#  - "emstandard_opt0" recommended standard EM physics for LHC
+#  - "emstandard_opt1" best CPU performance standard physics for LHC
+#  - "emstandard_opt2" similar fast simulation
+#  - "emstandard_opt3" best standard EM options - analog to "local" above
+#  - "emstandard_opt4" best current advanced EM options standard + lowenergy
+#  - "emstandardWVI" standard EM physics and WentzelVI multiple scattering
+#  - "emstandardSS"  standard EM physics and single scattering model
+#  - "emstandardGS"  standard EM physics and Goudsmit-Saunderson multiple scatt.
+#  - "emlivermore"  low-energy EM physics using Livermore data
+#  - "empenelope"   low-energy EM physics implementing Penelope models
+#  - "emlowenergy"  low-energy EM physics implementing experimental
+#                   low-energy models
+#   
+#  Decay and StepMax processes are added to each list. 
+# 
+#  Optional components can be added:
+#  - "elastic"       elastic scattering of hadrons
+#  - "HElastic"
+#  - "QElastic"    
+#  - "binary"        QBBC configuration of hadron inelastic models
+#  - "binary_ion"    Binary ion inelastic models
+#  - "ionIoni"       Ion gas models
